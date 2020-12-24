@@ -290,6 +290,13 @@ async fn draw(mut form: web::Form<DrawFormData>, data: web::Data<AppState>) -> i
     )
     .unwrap();
 
+    let mut sessions = data.sessions.lock().unwrap();
+
+    sessions
+        .get_mut(&id)
+        .unwrap()
+        .replace_range(.., "draw_success");
+
     HttpResponse::SeeOther()
         .set_header("Location", format!("/?id={}", &id))
         .finish()
@@ -329,7 +336,7 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .app_data(state.clone())
             .service(hello)
-            .service(submit_wish)
+            //.service(submit_wish)
             .service(draw)
             .service(serve_static_files)
     })

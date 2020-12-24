@@ -13,35 +13,16 @@
   <body style="background-image: linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)), url('/christmas_tree.jpg'); background-size: cover">
     <div class="mx-auto px-2 pb-5" style="max-width: 720px">
       {% if fill_success %}
-      <div class="alert alert-success text-center mt-3" role="alert">上交成功。<strong>請把這個網頁的 URL save 起來</strong>，抽籤的時候要用到。</div>
+      <div class="alert alert-success alert-dismissible fade show text-center mt-3" role="alert">
+        上交成功。<strong>請把這個網頁的 URL save 起來</strong>，抽籤的時候要用到。
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
       {% endif %}
 
       {% if draw_success %}
-      <div>
-        <div>你抽到了。。。</div>
-
-        <div class="card m-3" style="display: inline-flex; width: 100%; max-width: 300px">
-          <div class="list-group list-group-flush">
-            <div class="list-group-item">
-              <div class="h6">禮物一</div>
-              <div>{{ drawn_note.unwrap().presents[0] }}</div>
-            </div>
-            <div class="list-group-item">
-              <div class="h6">禮物二</div>
-              <div>{{ drawn_note.unwrap().presents[1] }}</div>
-            </div>
-            <div class="list-group-item">
-              <div class="h6">禮物三</div>
-              <div>{{ drawn_note.unwrap().presents[2] }}</div>
-            </div>
-            <div class="list-group-item">
-              <div class="h6">不曾到過的地方</div>
-              <div>{{ drawn_note.unwrap().my_place }}</div>
-            </div>
-          </div>
-        </div>
-
-        <div>去給對方一個驚喜吧！ 🤶🎅🎁🎊</div>
+      <div class="alert alert-success alert-dismissible fade show text-center mt-3" role="alert">
+        抽籤成功！！！
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
       </div>
       {% endif %}
 
@@ -49,7 +30,7 @@
 
       {% match drawn_note %}
       {% when Some with (note) %}
-      <h2 class="text-center pt-4 pb-3">你抽到的願望紙條</h2>
+      <h2 class="text-center pt-4 pb-3">你抽到了。。。</h2>
 
       <div class="mb-4 text-center">
         <div class="card m-3" style="display: inline-flex; width: 100%; max-width: 300px">
@@ -72,6 +53,8 @@
             </div>
           </div>
         </div>
+
+        <div>選一個禮物，然後去給對方驚喜吧！ 🤶🎅🎁🎊</div>
       </div>
       {% when None %}
       {% endmatch %}
@@ -115,6 +98,7 @@
         {% endfor %}
       </div>
 
+      {% if !draw_enabled %}
       <h2 class="text-center pt-4 pb-3">填寫願望紙條</h2>
 
       {% if filled %}
@@ -149,6 +133,7 @@
       </form>
       {% endif %}
 
+      {% endif %}
     </div>
 
     <!-- Optional JavaScript -->

@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+
+    <title>聖誕老人派禮物</title>
+  </head>
+  <body style="background-image: linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)), url('/christmas_tree.jpg'); background-size: cover">
+    <div class="mx-auto px-2 pb-5" style="max-width: 720px">
+      {% if fill_success %}
+      <div class="alert alert-success text-center mt-3" role="alert">上交成功。<strong>請把這個網頁的 URL save 起來</strong>，抽籤的時候要用到。</div>
+      {% endif %}
+
+      {% if draw_success %}
+      <div>
+        <div>你抽到了。。。</div>
+
+        <div class="card m-3" style="display: inline-flex; width: 100%; max-width: 300px">
+          <div class="list-group list-group-flush">
+            <div class="list-group-item">
+              <div class="h6">禮物一</div>
+              <div>{{ drawn_note.unwrap().presents[0] }}</div>
+            </div>
+            <div class="list-group-item">
+              <div class="h6">禮物二</div>
+              <div>{{ drawn_note.unwrap().presents[1] }}</div>
+            </div>
+            <div class="list-group-item">
+              <div class="h6">禮物三</div>
+              <div>{{ drawn_note.unwrap().presents[2] }}</div>
+            </div>
+            <div class="list-group-item">
+              <div class="h6">不曾到過的地方</div>
+              <div>{{ drawn_note.unwrap().my_place }}</div>
+            </div>
+          </div>
+        </div>
+
+        <div>去給對方一個驚喜吧！ 🤶🎅🎁🎊</div>
+      </div>
+      {% endif %}
+
+      <h1 class="text-center pt-3 pb-3">聖誕老人派禮物活動</h1>
+
+      {% match drawn_note %}
+      {% when Some with (note) %}
+      <h2 class="text-center pt-4 pb-3">你抽到的願望紙條</h2>
+
+      <div class="mb-4 text-center">
+        <div class="card m-3" style="display: inline-flex; width: 100%; max-width: 300px">
+          <div class="list-group list-group-flush">
+            <div class="list-group-item">
+              <div class="h6">禮物一</div>
+              <div>{{ note.presents[0] }}</div>
+            </div>
+            <div class="list-group-item">
+              <div class="h6">禮物二</div>
+              <div>{{ note.presents[1] }}</div>
+            </div>
+            <div class="list-group-item">
+              <div class="h6">禮物三</div>
+              <div>{{ note.presents[2] }}</div>
+            </div>
+            <div class="list-group-item">
+              <div class="h6">不曾到過的地方</div>
+              <div>{{ note.my_place }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% when None %}
+      {% endmatch %}
+
+      <h2 class="text-center pt-4 pb-3">願望紙條</h2>
+
+      {% if draw_enabled && drawn_note.is_none() %}
+      <div class="mb-3 text-center">
+        <form action="/draw" method="post" style="display: inline">
+          <input type="hidden" name="id" value="{{ id }}">
+          <button type="submit" class="btn btn-primary">抽籤</button>
+        </form>
+      </div>
+      {% endif %}
+
+      <div class="mb-4 text-center">
+        {% for wish_note in wish_notes %}
+        <div class="card m-3" style="display: inline-flex; width: 100%; max-width: 300px">
+          <div class="text-end" style="display: {% if wish_note.santa_id.is_empty() %} none {% else %} block {% endif %}; position: absolute; top: 0; bottom: 0; left: 0; right: 0; background-color: rgba(255, 255, 255, 0.5); z-index: 10">
+            <span class="text-danger">已被抽走</span>
+          </div>
+          <div class="list-group list-group-flush">
+            <div class="list-group-item">
+              <div class="h6">禮物一</div>
+              <div>{{ wish_note.presents[0] }}</div>
+            </div>
+            <div class="list-group-item">
+              <div class="h6">禮物二</div>
+              <div>{{ wish_note.presents[1] }}</div>
+            </div>
+            <div class="list-group-item">
+              <div class="h6">禮物三</div>
+              <div>{{ wish_note.presents[2] }}</div>
+            </div>
+            <div class="list-group-item">
+              <div class="h6">不曾到過的地方</div>
+              <div>{{ wish_note.my_place }}</div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <h2 class="text-center pt-4 pb-3">填寫願望紙條</h2>
+
+      {% if filled %}
+      <div class="text-center">
+        你已經填過了。<a href="/">點這裏來給其他人填寫</a>
+      </div>
+
+      {% else %}
+      <form action="/submit_wish" method="post">
+        <input type="hidden" name="id" value="{{ id }}">
+        <div class="mb-3">
+          <label for="present1" class="form-label fw-bold">禮物一</label>
+          <input type="text" class="form-control" id="present1" name="present1" aria-describedby="present1help" required>
+          <div id="present1help" class="form-text text-dark">你第一個想要獲得的禮物</div>
+        </div>
+        <div class="mb-3">
+          <label for="present2" class="form-label fw-bold">禮物二</label>
+          <input type="text" class="form-control" id="present2" name="present2" aria-describedby="present2help" required>
+          <div id="present2help" class="form-text text-dark">你第二個想要獲得的禮物</div>
+        </div>
+        <div class="mb-3">
+          <label for="present3" class="form-label fw-bold">禮物三</label>
+          <input type="text" class="form-control" id="present3" name="present3" aria-describedby="present3help" required>
+          <div id="present3help" class="form-text text-dark">你第三個想要獲得的禮物</div>
+        </div>
+        <div class="mb-3">
+          <label for="my_place" class="form-label fw-bold">不曾到過的地方</label>
+          <input type="text" class="form-control" id="my_place" name="my_place" aria-describedby="my_placehelp" required>
+          <div id="my_placehelp" class="form-text text-dark">這一欄是用來讓你記得這張願望紙條是屬於你的。請輸入一個你自己記得，但又無法讓別人辨認出你的答案。你想亂答也可以，比方說你可以回答“紅色”。</div>
+        </div>
+        <button type="submit" class="btn btn-primary">交上</button>
+      </form>
+      {% endif %}
+
+    </div>
+
+    <!-- Optional JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
+  </body>
+</html>
